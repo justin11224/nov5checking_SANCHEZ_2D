@@ -7,10 +7,10 @@ public class IT2d {
         String response;
         Scanner sc = new Scanner(System.in); 
         do { 
-            System.out.println("|-----------|`Welcome to SANCHEZ's Transport Checker|----------|");
-            System.out.println("|---------------------|1. EMPLOYEES     |----------------------|");
-            System.out.println("|---------------------|2. PRODUCTS      |----------------------|");
-            System.out.println("|---------------------|3. ORDERS RECORDS|----------------------|");
+            System.out.println("|-----------|'Job Application Management System'|----------|");
+            System.out.println("|---------------------|1. APPLICANTS    |----------------------|");
+            System.out.println("|---------------------|2. JOB LISTING   |----------------------|");
+            System.out.println("|---------------------|3. APPLICATION   |----------------------|");
             System.out.println("|---------------------|4. EXIT          |----------------------|");
            
             System.out.print  ("|-------------------|Enter action number: ");
@@ -18,18 +18,19 @@ public class IT2d {
             int action = sc.nextInt();
             sc.nextLine(); 
             
-            Employee EmployeeAction = new Employee();
-            Product  ProductAction  = new Product();
-            order_recods orders = new order_recods();
+            Applicant Action1 = new Applicant();
+            Job_Listing  Action2  = new Job_Listing();
+            APPLICATIONS Action3 = new APPLICATIONS();
             switch(action) {
                 case 1: 
-                    EmployeeAction.Employees(); 
+                    Action1.Applicants(); 
                     break;
                 case 2:
-                    ProductAction.Products();
+                    Action2.Job_Listings();
                     break;
                 case 3:
-                   orders.record();
+                    
+                   Action3.record();
                     break;
                 case 4:
                     System.out.println("Exiting the program...");
