@@ -9,12 +9,13 @@ Scanner sc=new Scanner(System.in);
         String response;
         
         do {
-            System.out.println("|--------------------|Choose an action:");
-            System.out.println("|--------------------|1. ADD APPLICATION");
-            System.out.println("|--------------------|2. VIEW APPLICATION");
-            System.out.println("|--------------------|3. UPDATE APPLICATION");
-            System.out.println("|--------------------|4. DELETE APPLICATION");
-            System.out.println("|--------------------|5. EXIT");
+            System.out.println("|--------------------|     APPLICATIONS      |--------------------|");
+            System.out.println("|--------------------|Choose an action:      |--------------------|");
+            System.out.println("|--------------------|1. ADD APPLICATION     |--------------------|");
+            System.out.println("|--------------------|2. VIEW APPLICATION    |--------------------|");
+            System.out.println("|--------------------|3. UPDATE APPLICATION  |--------------------|");
+            System.out.println("|--------------------|4. DELETE APPLICATION  |--------------------|");
+            System.out.println("|--------------------|5. EXIT                |--------------------|");
 
             System.out.print("|--------------------|Enter action number: ");
             int action = sc.nextInt();
@@ -93,16 +94,33 @@ Scanner sc=new Scanner(System.in);
        
        String qry ="INSERT INTO Applications (ApplicantID,JobID,ApplicationDate,Status) Values(? ,? ,? , ?)";
        conf.addRecord(qry,ApplicantID,JobID, date,status);
+       
+       
 }
 
 
     public void viewApplications() {
-        config conf = new config();
-        String query = "SELECT * FROM Applications";
-        String[] headers = {"ApplicationID", "ApplicantID", "JobID", "ApplicationDate","Status"};
-        String[] columns = {"ApplicationID", "ApplicantID", "JobID", "ApplicationDate", "Status"};
-        conf.viewRecords(query, headers, columns);
-    }
+    config conf = new config();
+    String query = "SELECT * FROM Applications";
+    String[] headers = {"ApplicationID", "ApplicantID", "JobID", "ApplicationDate", "Status"};
+    String[] columns = {"ApplicationID", "ApplicantID", "JobID", "ApplicationDate", "Status"};
+    conf.viewRecords(query, headers, columns);
+
+    System.out.print("Enter JobID to view applicants: ");
+    int jobId = sc.nextInt();
+
+    String query1 = "SELECT JobListings.JobID, Applicants.ApplicantID, Applications.Status " +
+                    "FROM JobListings " +
+                    "INNER JOIN Applications ON JobListings.JobID = Applications.JobID " +
+                    "INNER JOIN Applicants ON Applications.ApplicantID = Applicants.ApplicantID " +
+                    "WHERE JobListings.JobID = ?";
+
+    String[] headers1 = {"JobID", "ApplicantID", "Status"};
+    String[] columns1 = {"JobID", "ApplicantID", "Status"};
+    
+    conf.viewRecordsWithParam(query1, headers1, columns1, jobId);
+}
+
 
     public void updateApplications () {
         config conf=new config();
@@ -146,14 +164,14 @@ Scanner sc=new Scanner(System.in);
         job = sc.next();
         
         // Query to check if the Employee ID exists
-        String checkEmployeeQuery = "SELECT 1 FROM Applicants WHERE ApplicantID = ?";
+        String checkEmployeeQuery = "SELECT 1 FROM Applications WHERE ApplicationID = ?";
         if (conf.recordExists(checkEmployeeQuery, job)) {
             break; // Employee ID exists, exit the loop
         } else {
             System.out.println("Applications ID does not exist. Please try again.");
         }
     }
-        String qry = "DELETE FROM tbl_orders WHERE o_id = ?"; 
+        String qry = "DELETE FROM Applications WHERE ApplicationID = ?"; 
       
         conf.deleteRecord(qry, job);
     }

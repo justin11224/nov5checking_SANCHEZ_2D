@@ -225,6 +225,48 @@ public class config {
         }
         return result;
     }
+    public void viewRecordsWithParam(String query, String[] headers, String[] columns, int jobId) {
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+
+        try {
+            conn = connectDB();
+            stmt = conn.prepareStatement(query);
+            stmt.setInt(1, jobId);
+            rs = stmt.executeQuery();
+
+            for (String header : headers) {
+                System.out.print(header + "\t");
+            }
+            System.out.println();
+
+            while (rs.next()) {
+                for (String column : columns) {
+                    System.out.print(rs.getString(column) + "\t");
+                }
+                System.out.println();
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Error retrieving records: " + e.getMessage());
+        } finally {
+            try {
+                if (rs != null) {
+                    rs.close();
+                }
+                if (stmt != null) {
+                    stmt.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (SQLException e) {
+                System.out.println("Error closing resources: " + e.getMessage());
+            }
+        }
+    }
+
     
 }
 

@@ -8,11 +8,12 @@ public class Job_Listing {
 Scanner sc = new Scanner(System.in);
 
         do {
+            System.out.println("|--------------------|     JOB LIST     |----------------------|");
             System.out.println("|--------------------|Choose an action: |----------------------|");
             System.out.println("|--------------------|1. ADD JOB        |----------------------|");
             System.out.println("|--------------------|2. VIEW JOB       |----------------------|");
             System.out.println("|--------------------|3. UPDATE JOB     |----------------------|");
-            System.out.println("|--------------------|. DELETE JOB      |----------------------|");
+            System.out.println("|--------------------|4. DELETE JOB      |----------------------|");
             System.out.println("|--------------------|5. EXIT           |----------------------|");
             
             System.out.print("Enter action number: ");

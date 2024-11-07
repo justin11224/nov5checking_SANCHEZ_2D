@@ -7,7 +7,7 @@ public class IT2d {
         String response;
         Scanner sc = new Scanner(System.in); 
         do { 
-            System.out.println("|-----------|'Job Application Management System'|----------|");
+            System.out.println("|-----------|'Job Application Management System'|--------------|");
             System.out.println("|---------------------|1. APPLICANTS    |----------------------|");
             System.out.println("|---------------------|2. JOB LISTING   |----------------------|");
             System.out.println("|---------------------|3. APPLICATION   |----------------------|");

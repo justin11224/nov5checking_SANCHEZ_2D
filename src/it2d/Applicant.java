@@ -10,6 +10,7 @@ public class Applicant {
 
         do {
             Scanner sc=new Scanner(System.in);
+            System.out.println("|--------------------|     APPLICANT     |----------------------|");
             System.out.println("|--------------------|Choose an action:  |----------------------|");
             System.out.println("|--------------------|1. ADD APPLICANT   |----------------------|");
             System.out.println("|--------------------|2. VIEW APPLICANT  |----------------------|");
