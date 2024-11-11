@@ -225,47 +225,87 @@ public class config {
         }
         return result;
     }
-    public void viewRecordsWithParam(String query, String[] headers, String[] columns, int jobId) {
-        Connection conn = null;
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
+   public void viewRecordsWithParam(String query, String[] headers, String[] columns, int jobId) {
+    Connection conn = null;
+    PreparedStatement stmt = null;
+    ResultSet rs = null;
 
-        try {
-            conn = connectDB();
-            stmt = conn.prepareStatement(query);
-            stmt.setInt(1, jobId);
-            rs = stmt.executeQuery();
+    try {
+        conn = connectDB();
+        stmt = conn.prepareStatement(query);
+        stmt.setInt(1, jobId);
+        rs = stmt.executeQuery();
 
-            for (String header : headers) {
-                System.out.print(header + "\t");
-            }
-            System.out.println();
+        // Determine column widths based on headers first
+        int[] columnWidths = new int[headers.length];
+        for (int i = 0; i < headers.length; i++) {
+            columnWidths[i] = headers[i].length();
+        }
 
-            while (rs.next()) {
-                for (String column : columns) {
-                    System.out.print(rs.getString(column) + "\t");
+        // Adjust column widths based on data rows
+        while (rs.next()) {
+            for (int i = 0; i < columns.length; i++) {
+                String data = rs.getString(columns[i]);
+                if (data != null && data.length() > columnWidths[i]) {
+                    columnWidths[i] = data.length();
                 }
-                System.out.println();
-            }
-
-        } catch (SQLException e) {
-            System.out.println("Error retrieving records: " + e.getMessage());
-        } finally {
-            try {
-                if (rs != null) {
-                    rs.close();
-                }
-                if (stmt != null) {
-                    stmt.close();
-                }
-                if (conn != null) {
-                    conn.close();
-                }
-            } catch (SQLException e) {
-                System.out.println("Error closing resources: " + e.getMessage());
             }
         }
+
+        // Print top boundary
+        printBoundaryLine(columnWidths);
+
+        // Print headers with boundaries
+        System.out.print("|");
+        for (int i = 0; i < headers.length; i++) {
+            System.out.print(String.format(" %-"+ columnWidths[i] + "s |", headers[i]));
+        }
+        System.out.println();
+
+        // Print separator line between headers and data
+        printBoundaryLine(columnWidths);
+
+        // Reset ResultSet to re-read data rows
+        rs = stmt.executeQuery();  // Re-run the query to re-read the data
+
+        // Print rows of data with boundaries
+        while (rs.next()) {
+            System.out.print("|");
+            for (int i = 0; i < columns.length; i++) {
+                String data = rs.getString(columns[i]);
+                System.out.print(String.format(" %-"+ columnWidths[i] + "s |", data != null ? data : ""));
+            }
+            System.out.println();
+        }
+
+        // Print bottom boundary
+        printBoundaryLine(columnWidths);
+
+    } catch (SQLException e) {
+        System.out.println("Error retrieving records: " + e.getMessage());
+    } finally {
+        // Close resources
+        try {
+            if (rs != null) rs.close();
+            if (stmt != null) stmt.close();
+            if (conn != null) conn.close();
+        } catch (SQLException e) {
+            System.out.println("Error closing resources: " + e.getMessage());
+        }
     }
+}
+
+// Helper method to print boundary line
+private void printBoundaryLine(int[] columnWidths) {
+    System.out.print("+");
+    for (int width : columnWidths) {
+        for (int j = 0; j < width + 2; j++) {
+            System.out.print("-");
+        }
+        System.out.print("+");
+    }
+    System.out.println();
+}
 
     
 }
