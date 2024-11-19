@@ -5,58 +5,71 @@ import java.util.Scanner;
 public class Applicant {
     
 
-    public void Applicants() { 
-        String response;
+   public void Applicants() { 
+    String response;
+    Scanner sc = new Scanner(System.in);
 
+    do {
+        String action;
+        
+        // Prompt the user for action input in a do-while loop
         do {
-            Scanner sc=new Scanner(System.in);
             System.out.println("|--------------------|     APPLICANT     |----------------------|");
             System.out.println("|--------------------|Choose an action:  |----------------------|");
-            System.out.println("|--------------------|1. ADD APPLICANT   |----------------------|");
-            System.out.println("|--------------------|2. VIEW APPLICANT  |----------------------|");
-            System.out.println("|--------------------|3. UPDATE APPLICANT|----------------------|");
-            System.out.println("|--------------------|4. DELETE APPLICANT|----------------------|");
-            System.out.println("|--------------------|5. EXIT            |----------------------|");
+            System.out.println("|--------------------|A. ADD APPLICANT   |----------------------|");
+            System.out.println("|--------------------|B. VIEW APPLICANT  |----------------------|");
+            System.out.println("|--------------------|C. UPDATE APPLICANT|----------------------|");
+            System.out.println("|--------------------|D. DELETE APPLICANT|----------------------|");
+            System.out.println("|--------------------|E. EXIT            |----------------------|");
+            boolean validInput = false;
             
-            System.out.print  ("|-------------------|Enter action number:");
-            System.out.println("|---------------------|");
-            int action = sc.nextInt();
-            
-            switch (action) {
-                case 1:
-                    addEmployee();
-                    break;
-                case 2:
-                    viewEmployees();
-                    break;  
-                case 3:
-                    viewEmployees();
-                    updateApplicant();
-                    viewEmployees();
-                    break;
-                case 4:
-                    viewEmployees();
-                    deleteEmployee();
-                    viewEmployees();
-                    break;
-                case 5:
-                    System.out.println("|-------------------|Exiting...|-------------------|");
-                    return;
-                default:
-                    System.out.println("|-------------------|Invalid option. Please try again.|-------------------|");
-                    break;
-            }
+            do {
+                System.out.print("|-------------------|Enter action letter (A, B, C, D): ");
+                action = sc.nextLine().toUpperCase();
+                
+                if (action.equals("A") || action.equals("B") || action.equals("C") || action.equals("D")|| action.equals("E")) {
+                    validInput = true;
+                } else {
+                    System.out.println("|--------------------|Invalid input! Please enter A, B, C, D, or E.");
+                }
+            } while (!validInput);
+ 
 
-            System.out.print("|-------------------|Do you want to continue? (yes or no): ");
-            response = sc.next();
+            // Check for valid input (A-E)
+            if (action.equals("A")) {
+                addApplicant();
+                break;
+            } else if (action.equals("B")) {
+                viewApplicant();
+                break;
+            } else if (action.equals("C")) {
+                viewApplicant();
+                updateApplicant();
+                viewApplicant();
+                break;
+            } else if (action.equals("D")) {
+                viewApplicant();
+                deleteApplicant();
+                viewApplicant();
+                break;
+            } else if (action.equals("E")) {
+                System.out.println("|--------------------|Exiting...");
+                return;
+            } 
 
-        } while (response.equalsIgnoreCase("yes"));
-        
-        System.out.println("Thank you, see you!");
-       
-    }
+        } while (true);  // Repeat until a valid option is chosen
 
-    public void addEmployee() {
+        // Ask if the user wants to continue
+        System.out.print("|--------------------|Do you want to continue? (yes or no): ");
+        response = sc.next();
+
+    } while (response.equalsIgnoreCase("yes"));  // Repeat if the user wants to continue
+
+    System.out.println("|--------------------|Thank you, see you!");
+}
+
+
+    public void addApplicant() {
         Scanner sc = new Scanner(System.in);
        
         System.out.print("|-------------------|Applicant Full Name : ");
@@ -72,7 +85,7 @@ public class Applicant {
         conf.addRecord(sql, fname, email, pn, res);
     }
 
-    public void viewEmployees() {
+    public void viewApplicant() {
         config conf = new config();
         String query = "SELECT * FROM Applicants";    
         String[] headers = {"ApplicantID", "Name", "Email", "PhoneNumber", "Resume"};
@@ -111,7 +124,7 @@ public class Applicant {
 }
 
 
-    public void deleteEmployee() {
+    public void deleteApplicant() {
         config conf = new config();
         Scanner sc = new Scanner(System.in);
         String ApplicantID;

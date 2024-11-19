@@ -3,55 +3,52 @@ package it2d;
 import java.util.Scanner;
 
 public class APPLICATIONS {
-     
+
     Scanner sc = new Scanner(System.in);
 
     public void record() {
         String response;
-        
+
         do {
             System.out.println("|--------------------|     APPLICATIONS      |--------------------|");
             System.out.println("|--------------------|Choose an action:      |--------------------|");
-            System.out.println("|--------------------|1. ADD APPLICATION     |--------------------|");
-            System.out.println("|--------------------|2. VIEW APPLICATION    |--------------------|");
-            System.out.println("|--------------------|3. UPDATE APPLICATION  |--------------------|");
-            System.out.println("|--------------------|4. DELETE APPLICATION  |--------------------|");
-            System.out.println("|--------------------|5. EXIT                |--------------------|");
+            System.out.println("|--------------------|A. ADD APPLICATION     |--------------------|");
+            System.out.println("|--------------------|B. VIEW APPLICATION    |--------------------|");
+            System.out.println("|--------------------|C. UPDATE APPLICATION  |--------------------|");
+            System.out.println("|--------------------|D. DELETE APPLICATION  |--------------------|");
+            System.out.println("|--------------------|E. EXIT                |--------------------|");
 
-            System.out.print("|--------------------|Enter action number: ");
-            int action = sc.nextInt();
+            boolean validInput = false;
+String action;
+do {
+    System.out.print("|-------------------|Enter action letter (A, B, C, D, E): ");
+    action = sc.nextLine().toUpperCase();
 
-            switch (action) {
-                case 1:
-                    addApplications();
-                    break;
-                case 2:
-                    viewApplications();
-                    break;
-                case 3:
-                    viewApplications();
-                    updateApplications();
-                    viewApplications();
-                    break;
-                case 4:
-                    viewApplications();
-                    deleteApplications();
-                    viewApplications();
-                    break;
-                case 5:
-                    System.out.println("|--------------------|Exiting...");
-                    return;
-                default:
-                    System.out.println("|--------------------|Invalid option. Please try again.");
-                    break;
-            }
+    if (action.equals("A") || action.equals("B") || action.equals("C") || action.equals("D") || action.equals("E")) {
+        validInput = true;
+    } else {
+        System.out.println("|--------------------|Invalid input! Please enter A, B, C, D, or E.");
+    }
+} while (!validInput);
 
-            System.out.print("|--------------------|Do you want to continue? (yes or no): ");
-            response = sc.next();
+if (action.equals("A")) {
+    addApplications();
+} else if (action.equals("B")) {
+    viewApplications();
+} else if (action.equals("C")) {
+    updateApplications();
+} else if (action.equals("D")) {
+    deleteApplications();
+} else if (action.equals("E")) {
+    System.out.println("|--------------------|Exiting...");
+    return;
+}
 
-        } while (response.equalsIgnoreCase("yes"));
+System.out.print("|--------------------|Do you want to continue? (yes or no): ");
+response = sc.next();
+} while (response.equalsIgnoreCase("yes"));
 
-        System.out.println("|--------------------|Thank you, see you!");
+System.out.println("|--------------------|Thank you, see you!");
     }
 
     public void addApplications() {
@@ -59,7 +56,7 @@ public class APPLICATIONS {
         String ApplicantID, JobID;
 
         Applicant ap = new Applicant();
-        ap.viewEmployees();
+        ap.viewApplicant();
         while (true) {
             System.out.print("|--------------------|Enter Applicant ID: ");
             ApplicantID = sc.next();
@@ -73,7 +70,7 @@ public class APPLICATIONS {
         }
 
         Job_Listing a = new Job_Listing();
-        a.viewProducts();
+        a.viewJob();
         while (true) {
             System.out.print("|--------------------|Enter Job ID: ");
             JobID = sc.next();
@@ -96,96 +93,97 @@ public class APPLICATIONS {
     }
 
     public void viewApplications() {
-    config conf = new config();
+        config conf = new config();
 
-    System.out.println("Choose an option:");
-    System.out.println("1. View all applications");
-    System.out.println("2. View applications applying for one Job ID");
-    System.out.println("3. View applications with due ApplicationDate");
-    System.out.println("4. View applicant report by ApplicantID"); // Updated option
-    System.out.print("Enter your choice: ");
-    
-    int choice = sc.nextInt();
-    
-    switch (choice) {
-        case 1:
+        System.out.println("Choose an option:");
+        System.out.println("A. View all applications");
+        System.out.println("B. View applications applying for one Job ID");
+        System.out.println("C. View applications with past ApplicationDate");
+        System.out.println("D. View applicant report by ApplicantID");
+        System.out.println("E. Exit");
+        System.out.print("Enter your choice: ");
+
+        char choice = sc.next().toUpperCase().charAt(0);
+
+        if (choice == 'A') {
             String query = "SELECT * FROM Applications";
             String[] headers = {"ApplicationID", "ApplicantID", "JobID", "ApplicationDate", "Status"};
             String[] columns = {"ApplicationID", "ApplicantID", "JobID", "ApplicationDate", "Status"};
             conf.viewRecords(query, headers, columns);
-            break;
-
-        case 2:
-            String query0 = "SELECT JobID FROM Applications";  // Change the query to select JobID
-            String[] headers0 = {"JobID"};  
-            String[] columns0 = {"JobID"}; 
+        } else if (choice == 'B') {
+            String query0 = "SELECT DISTINCT a.JobID, j.JobTitle, j.Department FROM Applications a JOIN JobListings j ON a.JobID = j.JobID";
+            String[] headers0 = {"JobID", "JobTitle", "Department"};
+            String[] columns0 = {"JobID", "JobTitle", "Department"};
             conf.viewRecords(query0, headers0, columns0);
-            System.out.print("Enter JobID to view applicants: ");
-            int jobId = sc.nextInt();
 
-            String query1 = "SELECT JobListings.JobID, Applicants.ApplicantID, Applications.Status " +
-                            "FROM JobListings " +
-                            "INNER JOIN Applications ON JobListings.JobID = Applications.JobID " +
-                            "INNER JOIN Applicants ON Applications.ApplicantID = Applicants.ApplicantID " +
-                            "WHERE JobListings.JobID = ?";
+            int jobId;
+            boolean isValidJobId = false;
 
-            String[] headers1 = {"JobID", "ApplicantID", "Status"};
-            String[] columns1 = {"JobID", "ApplicantID", "Status"};
-            
-            conf.viewRecordsWithParam(query1, headers1, columns1, jobId);
-            break;
+            while (!isValidJobId) {
+                System.out.print("Enter JobID to view applicants: ");
+                jobId = sc.nextInt();
 
-        case 3:
-            System.out.println("Viewing applications with past ApplicationDate:");
-String query2 = "SELECT ApplicationID, ApplicantID, ApplicationDate " +
-                "FROM Applications WHERE ApplicationDate < CURRENT_DATE";
-String[] headers2 = {"ApplicationID", "ApplicantID", "ApplicationDate"};
-String[] columns2 = {"ApplicationID", "ApplicantID", "ApplicationDate"};
+                String validationQuery = "SELECT 1 FROM Applications WHERE JobID = ?";
+                isValidJobId = conf.checkExistsWithParam(validationQuery, jobId);
 
-conf.viewRecords(query2, headers2, columns2);
+                if (!isValidJobId) {
+                    System.out.println("Invalid JobID. Please enter a valid JobID from the list above.");
+                } else {
+                    String query1 = "SELECT JobListings.JobID, Applicants.ApplicantID, Applicants.Name, Applicants.Resume, Applications.Status FROM JobListings INNER JOIN Applications ON JobListings.JobID = Applications.JobID INNER JOIN Applicants ON Applications.ApplicantID = Applicants.ApplicantID WHERE JobListings.JobID = ?";
+                    String[] headers1 = {"JobID", "ApplicantID", "Name", "Resume", "Status"};
+                    String[] columns1 = {"JobID", "ApplicantID", "Name", "Resume", "Status"};
+                    conf.viewRecordsWithParam(query1, headers1, columns1, jobId);
+                }
+            }
 
-            break;
+        } else if (choice == 'C') {
+    String query2 = "SELECT Applications.ApplicationID, Applications.ApplicantID, Applications.ApplicationDate, " +
+                    "JobListings.JobID, Applicants.Name, Applicants.Email, Applicants.PhoneNumber " +
+                    "FROM Applications " +
+                    "LEFT JOIN JobListings ON Applications.JobID = JobListings.JobID " +
+                    "LEFT JOIN Applicants ON Applications.ApplicantID = Applicants.ApplicantID " +
+                    "WHERE Applications.ApplicationDate < CURRENT_DATE";
+    
+    String[] headers2 = {"ApplicationID", "ApplicantID", "ApplicationDate", "JobID", "Name", "Email", "PhoneNumber"};
+    String[] columns2 = {"ApplicationID", "ApplicantID", "ApplicationDate", "JobID", "Name", "Email", "PhoneNumber"};
+    
+    conf.viewRecords(query2, headers2, columns2);
 
-        case 4:
-           
-    System.out.println("Viewing all ApplicationIDs:");
-    String query5 = "SELECT ApplicantID FROM Applicants";
-    String[] headers5 = {"ApplicantID"};
-    String[] columns5 = {"ApplicantID"};
-    conf.viewRecords(query5, headers5, columns5);
 
-    System.out.print("Enter ApplicantID to view their report: ");
-    int applicantId = sc.nextInt();
 
-    System.out.println("Viewing report for ApplicantID: " + applicantId);
 
-    String query4 = "SELECT Applicants.ApplicantID, Applicants.Name, Applicants.Email, Applicants.Phonenumber, " +
-                    "Applications.JobID, Applications.ApplicationDate, Applications.Status " +
+        } else if (choice == 'D') {
+    String query5 = "SELECT Applicants.ApplicantID, Applicants.Name, JobListings.JobTitle, JobListings.Department " +
                     "FROM Applicants " +
                     "LEFT JOIN Applications ON Applicants.ApplicantID = Applications.ApplicantID " +
-                    "WHERE Applicants.ApplicantID = ?";
+                    "LEFT JOIN JobListings ON Applications.JobID = JobListings.JobID";
 
-    String[] headers4 = {"ApplicantID", "Name", "Email", "Phonenumber", "JobID", "ApplicationDate", "Status"};
-    String[] columns4 = {"ApplicantID", "Name", "Email", "Phonenumber", "JobID", "ApplicationDate", "Status"};
+    String[] headers5 = {"ApplicantID", "Name", "JobTitle", "Department"};
+    String[] columns5 = {"ApplicantID", "Name", "JobTitle", "Department"};
 
-    conf.viewRecordsWithParam(query4, headers4, columns4, applicantId);
-    break;
+    conf.viewRecords(query5, headers5, columns5);
 
-            
 
-        default:
-            System.out.println("Invalid choice. Please try again.");
-            break;
+            System.out.print("Enter ApplicantID to view their report: ");
+            int applicantId = sc.nextInt();
+
+            String query4 = "SELECT Applicants.ApplicantID, Applicants.Name, Applicants.Email, Applicants.Phonenumber, Applications.JobID, Applications.ApplicationDate, Applications.Status FROM Applicants LEFT JOIN Applications ON Applicants.ApplicantID = Applications.ApplicantID WHERE Applicants.ApplicantID = ?";
+            String[] headers4 = {"ApplicantID", "Name", "Email", "Phonenumber", "JobID", "ApplicationDate", "Status"};
+            String[] columns4 = {"ApplicantID", "Name", "Email", "Phonenumber", "JobID", "ApplicationDate", "Status"};
+            conf.viewRecordsWithParam(query4, headers4, columns4, applicantId);
+        } else if (choice == 'E') {
+            System.out.println("Exiting program. Goodbye!");
+        }
     }
-}
-
-
-
-    
 
     public void updateApplications() {
         config conf = new config();
         String applicationID;
+        
+        String query = "SELECT * FROM Applications";
+            String[] headers = {"ApplicationID", "ApplicantID", "JobID", "ApplicationDate", "Status"};
+            String[] columns = {"ApplicationID", "ApplicantID", "JobID", "ApplicationDate", "Status"};
+            conf.viewRecords(query, headers, columns);
 
         while (true) {
             System.out.print("|--------------------|Enter Application ID: ");
@@ -210,11 +208,21 @@ conf.viewRecords(query2, headers2, columns2);
 
         String qry = "UPDATE Applications SET ApplicantID = ?, JobID = ?, ApplicationDate = ?, Status = ? WHERE ApplicationID = ?";
         conf.updateRecord(qry, newApplicantID, newJobID, newApplicationDate, newStatus, applicationID);
+    String query1 = "SELECT * FROM Applications";
+            String[] headers1 = {"ApplicationID", "ApplicantID", "JobID", "ApplicationDate", "Status"};
+            String[] columns1 = {"ApplicationID", "ApplicantID", "JobID", "ApplicationDate", "Status"};
+            conf.viewRecords(query1, headers1, columns1);
     }
+    
+    
 
     public void deleteApplications() {
         config conf = new config();
         String applicationID;
+        String query1 = "SELECT * FROM Applications";
+            String[] headers1 = {"ApplicationID", "ApplicantID", "JobID", "ApplicationDate", "Status"};
+            String[] columns1 = {"ApplicationID", "ApplicantID", "JobID", "ApplicationDate", "Status"};
+            conf.viewRecords(query1, headers1, columns1);
 
         while (true) {
             System.out.print("|--------------------|Enter Application ID: ");
@@ -230,5 +238,9 @@ conf.viewRecords(query2, headers2, columns2);
 
         String qry = "DELETE FROM Applications WHERE ApplicationID = ?";
         conf.deleteRecord(qry, applicationID);
+        String query11 = "SELECT * FROM Applications";
+            String[] headers11 = {"ApplicationID", "ApplicantID", "JobID", "ApplicationDate", "Status"};
+            String[] columns11 = {"ApplicationID", "ApplicantID", "JobID", "ApplicationDate", "Status"};
+            conf.viewRecords(query11, headers11, columns11);
     }
 }

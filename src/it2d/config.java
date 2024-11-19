@@ -307,6 +307,34 @@ private void printBoundaryLine(int[] columnWidths) {
     System.out.println();
 }
 
-    
+    public boolean recordExists(String query, int param) {
+    try (Connection conn = connectDB(); // Establish connection
+         PreparedStatement stmt = conn.prepareStatement(query)) {
+         
+        stmt.setInt(1, param); // Set parameter value
+        ResultSet rs = stmt.executeQuery();
+        
+        // Return true if a record is found (count > 0)
+        return rs.next() && rs.getInt(1) > 0;
+        
+    } catch (SQLException e) {
+        System.out.println("Error while checking record existence: " + e.getMessage());
+    }
+    return false;
+}
+    public boolean checkExistsWithParam(String query, int param) {
+        try (Connection conn = connectDB();
+    PreparedStatement pstmt = conn.prepareStatement(query)) {
+        pstmt.setInt(1, param);
+        try (ResultSet rs = pstmt.executeQuery()) {
+            return rs.next(); // Return true if a record exists
+        }
+    } catch (SQLException e) {
+        System.out.println("Error while checking JobID: " + e.getMessage());
+    }
+    return false;
+}
+
+
 }
 

@@ -3,131 +3,131 @@ package it2d;
 import java.util.Scanner;
 
 public class Job_Listing {
-    public void Job_Listings() { 
+    Scanner sc = new Scanner(System.in);
+
+    public void Job_Listings() {
         String response;
-Scanner sc = new Scanner(System.in);
 
         do {
             System.out.println("|--------------------|     JOB LIST     |----------------------|");
             System.out.println("|--------------------|Choose an action: |----------------------|");
-            System.out.println("|--------------------|1. ADD JOB        |----------------------|");
-            System.out.println("|--------------------|2. VIEW JOB       |----------------------|");
-            System.out.println("|--------------------|3. UPDATE JOB     |----------------------|");
-            System.out.println("|--------------------|4. DELETE JOB      |----------------------|");
-            System.out.println("|--------------------|5. EXIT           |----------------------|");
-            
-            System.out.print("Enter action number: ");
-            int action = sc.nextInt();
-            
+            System.out.println("|--------------------|A. ADD JOB        |----------------------|");
+            System.out.println("|--------------------|B. VIEW JOB       |----------------------|");
+            System.out.println("|--------------------|C. UPDATE JOB     |----------------------|");
+            System.out.println("|--------------------|D. DELETE JOB     |----------------------|");
+            System.out.println("|--------------------|E. EXIT           |----------------------|");
+
+            boolean validInput = false;
+            String action;
+            do {
+                System.out.print("|-------------------|Enter action letter (A, B, C, D): ");
+                action = sc.nextLine().toUpperCase();
+
+                if (action.equals("A") || action.equals("B") || action.equals("C") || action.equals("D") || action.equals("E")) {
+                    validInput = true;
+                } else {
+                    System.out.println("|--------------------|Invalid input! Please enter A, B, C, D, or E.");
+                }
+            } while (!validInput);
+
             switch (action) {
-                case 1:
-                    addProduct();
+                case "A":
+                    AddJob();
                     break;
-                case 2:
-                    viewProducts();
-                    break;  
-                case 3:
-                    viewProducts();
-                    updateProduct();
-                    viewProducts();
+                case "B":
+                    viewJob();
                     break;
-                case 4:
-                    viewProducts();
-                    deleteProduct();
-                    viewProducts();
+                case "C":
+                    viewJob();
+                    updateJob();
+                    viewJob();
                     break;
-                case 5:
-                    System.out.println("|-------------------|Exiting...");
+                case "D":
+                    viewJob();
+                    deleteJob();
+                    viewJob();
+                    break;
+                case "E":
+                    System.out.println("|--------------------|Exiting...");
                     return;
                 default:
-                    System.out.println("|-------------------|Invalid option. Please try again.|-------------------|");
-                    break;
+                    System.out.println("|--------------------|Invalid option. Please try again.");
             }
 
-            System.out.print("|-------------------|Do you want to continue? (yes or no): ");
+            System.out.print("|--------------------|Do you want to continue? (yes or no): ");
             response = sc.next();
-
         } while (response.equalsIgnoreCase("yes"));
-        
-        System.out.println("|-------------------|Thank you, see you!");
+
+        System.out.println("|--------------------|Thank you, see you!");
     }
 
-    public void addProduct() {
-        Scanner sc = new Scanner(System.in);
+    public void AddJob() {
         System.out.print("|-------------------|JOB Title: ");
-        String title = sc.next();
+        String title = sc.nextLine();
         System.out.print("|-------------------|JOB Department: ");
-        String dep = sc.next();
+        String dep = sc.nextLine();
         System.out.print("|-------------------|JOB Location: ");
-        String loc = sc.next();
+        String loc = sc.nextLine();
         System.out.print("|-------------------|JOB Application Deadline: ");
-        String ad = sc.next();
+        String ad = sc.nextLine();
 
         String sql = "INSERT INTO JobListings (JobTitle, Department, Location, ApplicationDeadline) VALUES (?, ?, ?, ?)";
         config conf = new config();
         conf.addRecord(sql, title, dep, loc, ad);
     }
 
-    public void viewProducts() {
+    public void viewJob() {
         config conf = new config();
         String query = "SELECT * FROM JobListings";
         String[] headers = {"JobID", "JobTitle", "Department", "Location", "ApplicationDeadline"};
         String[] columns = {"JobID", "JobTitle", "Department", "Location", "ApplicationDeadline"};
-
         conf.viewRecords(query, headers, columns);
     }
 
-    public void updateProduct() {
-         config conf = new config();
-        Scanner sc = new Scanner(System.in);
+    public void updateJob() {
+        config conf = new config();
         String JobID;
-    while (true) {
-        System.out.print("|--------------------|Enter JobID: ");
-        JobID = sc.next();
-        
-        // Query to check if the Employee ID exists
-        String checkEmployeeQuery = "SELECT 1 FROM JobListings WHERE JobID = ?";
-        if (conf.recordExists(checkEmployeeQuery, JobID)) {
-            break; // Employee ID exists, exit the loop
-        } else {
-            System.out.println("JobID does not exist. Please try again.");
+        while (true) {
+            System.out.print("|--------------------|Enter JobID: ");
+            JobID = sc.nextLine();
+
+            String checkEmployeeQuery = "SELECT 1 FROM JobListings WHERE JobID = ?";
+            if (conf.recordExists(checkEmployeeQuery, JobID)) {
+                break;
+            } else {
+                System.out.println("JobID does not exist. Please try again.");
+            }
         }
-    }
 
         System.out.print("|-------------------|EDIT JOB Title: ");
-        String ntitle = sc.next();
+        String ntitle = sc.nextLine();
         System.out.print("|-------------------|EDIT JOB Department: ");
-        String ndep = sc.next();
+        String ndep = sc.nextLine();
         System.out.print("|-------------------|EDIT JOB Location: ");
-        String nloc = sc.next();
+        String nloc = sc.nextLine();
         System.out.print("|-------------------|EDIT JOB ApplicationDeadline: ");
-        String nad = sc.next();
+        String nad = sc.nextLine();
 
         String qry = "UPDATE JobListings SET JobTitle = ?, Department = ?, Location = ?, ApplicationDeadline = ? WHERE JobID = ?";
-       
-        conf.updateRecord(qry, ntitle, ndep, nloc, nad,JobID); 
+        conf.updateRecord(qry, ntitle, ndep, nloc, nad, JobID);
     }
 
-    public void deleteProduct() {
-        
+    public void deleteJob() {
         config conf = new config();
-        Scanner sc = new Scanner(System.in);
         String JobID;
-    while (true) {
-        System.out.print("|--------------------|Enter JobID: ");
-        JobID = sc.next();
-        
-        // Query to check if the Employee ID exists
-        String checkEmployeeQuery = "SELECT 1 FROM JobListings WHERE JobID = ?";
-        if (conf.recordExists(checkEmployeeQuery, JobID)) {
-            break; // Employee ID exists, exit the loop
-        } else {
-            System.out.println("JobID does not exist. Please try again.");
+        while (true) {
+            System.out.print("|--------------------|Enter JobID: ");
+            JobID = sc.nextLine();
+
+            String checkEmployeeQuery = "SELECT 1 FROM JobListings WHERE JobID = ?";
+            if (conf.recordExists(checkEmployeeQuery, JobID)) {
+                break;
+            } else {
+                System.out.println("JobID does not exist. Please try again.");
+            }
         }
-    }
 
         String qry = "DELETE FROM JobListings WHERE JobID = ?";
-        
         conf.deleteRecord(qry, JobID);
     }
 }
