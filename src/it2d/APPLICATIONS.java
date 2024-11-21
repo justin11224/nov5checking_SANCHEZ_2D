@@ -92,129 +92,129 @@ System.out.println("|--------------------|Thank you, see you!");
         conf.addRecord(qry, ApplicantID, JobID, date, status);
     }
 
-      public void viewApplications() {
+     public void viewApplications() {
     config conf = new config();
+    String choice;
 
-    System.out.println("Choose an option:");
-    System.out.println("A. View all applications");
-    System.out.println("B. View applications applying for one Job ID");
-    System.out.println("C. View applications with past ApplicationDate");
-    System.out.println("D. View applicant report by ApplicantID");
-    System.out.println("E. View all approved-pending-declined applications");
-    System.out.println("F. Exit");
-    System.out.print("Enter your choice: ");
+    do {
+        System.out.println("Choose an option:");
+        System.out.println("A. View all applications");
+        System.out.println("B. View applications applying for one Job ID");
+        System.out.println("C. View applications with past ApplicationDate");
+        System.out.println("D. View applicant report by ApplicantID");
+        System.out.println("E. View all approved-pending-declined applications");
+        System.out.println("F. Exit");
+        System.out.print("Enter your choice: ");
 
-    char choice = sc.next().toUpperCase().charAt(0);
+        choice = sc.next().toUpperCase(); // Read the choice as a String
 
-    if (choice == 'A') {
-        String query = "SELECT * FROM Applications";
-        String[] headers = {"ApplicationID", "ApplicantID", "JobID", "ApplicationDate", "Status"};
-        String[] columns = {"ApplicationID", "ApplicantID", "JobID", "ApplicationDate", "Status"};
-        conf.viewRecords(query, headers, columns);
-    } else if (choice == 'B') {
-        String query0 = "SELECT DISTINCT a.JobID, j.JobTitle, j.Department FROM Applications a JOIN JobListings j ON a.JobID = j.JobID";
-        String[] headers0 = {"JobID", "JobTitle", "Department"};
-        String[] columns0 = {"JobID", "JobTitle", "Department"};
-        conf.viewRecords(query0, headers0, columns0);
+        // Handle the user's choice
+        if (choice.equals("A")) {
+            String query = "SELECT * FROM Applications";
+            String[] headers = {"ApplicationID", "ApplicantID", "JobID", "ApplicationDate", "Status"};
+            String[] columns = {"ApplicationID", "ApplicantID", "JobID", "ApplicationDate", "Status"};
+            conf.viewRecords(query, headers, columns);
+        } else if (choice.equals("B")) {
+            String query0 = "SELECT DISTINCT a.JobID, j.JobTitle, j.Department FROM Applications a JOIN JobListings j ON a.JobID = j.JobID";
+            String[] headers0 = {"JobID", "JobTitle", "Department"};
+            String[] columns0 = {"JobID", "JobTitle", "Department"};
+            conf.viewRecords(query0, headers0, columns0);
 
-        int jobId;
-        boolean isValidJobId = false;
+            int jobId;
+            boolean isValidJobId = false;
 
-        while (!isValidJobId) {
-            System.out.print("Enter JobID to view applicants: ");
-            jobId = sc.nextInt();
+            while (!isValidJobId) {
+                System.out.print("Enter JobID to view applicants: ");
+                jobId = sc.nextInt();
 
-            String validationQuery = "SELECT 1 FROM Applications WHERE JobID = ?";
-            isValidJobId = conf.checkExistsWithParam(validationQuery, jobId);
+                String validationQuery = "SELECT 1 FROM Applications WHERE JobID = ?";
+                isValidJobId = conf.checkExistsWithParam(validationQuery, jobId);
 
-            if (!isValidJobId) {
-                System.out.println("Invalid JobID. Please enter a valid JobID from the list above.");
-            } else {
-                String query1 = "SELECT JobListings.JobID, Applicants.ApplicantID, Applicants.Name, Applicants.Resume, Applications.Status FROM JobListings INNER JOIN Applications ON JobListings.JobID = Applications.JobID INNER JOIN Applicants ON Applications.ApplicantID = Applicants.ApplicantID WHERE JobListings.JobID = ?";
-                String[] headers1 = {"JobID", "ApplicantID", "Name", "Resume", "Status"};
-                String[] columns1 = {"JobID", "ApplicantID", "Name", "Resume", "Status"};
-                conf.viewRecordsWithParam(query1, headers1, columns1, jobId);
+                if (!isValidJobId) {
+                    System.out.println("Invalid JobID. Please enter a valid JobID from the list above.");
+                } else {
+                    String query1 = "SELECT JobListings.JobID, Applicants.ApplicantID, Applicants.Name, Applicants.Resume, Applications.Status FROM JobListings INNER JOIN Applications ON JobListings.JobID = Applications.JobID INNER JOIN Applicants ON Applications.ApplicantID = Applicants.ApplicantID WHERE JobListings.JobID = ?";
+                    String[] headers1 = {"JobID", "ApplicantID", "Name", "Resume", "Status"};
+                    String[] columns1 = {"JobID", "ApplicantID", "Name", "Resume", "Status"};
+                    conf.viewRecordsWithParam(query1, headers1, columns1, jobId);
+                }
             }
+        } else if (choice.equals("C")) {
+            String query2 = "SELECT Applications.ApplicationID, Applications.ApplicantID, Applications.ApplicationDate, " +
+                            "JobListings.JobID, Applicants.Name, Applicants.Email, Applicants.PhoneNumber " +
+                            "FROM Applications " +
+                            "LEFT JOIN JobListings ON Applications.JobID = JobListings.JobID " +
+                            "LEFT JOIN Applicants ON Applications.ApplicantID = Applicants.ApplicantID " +
+                            "WHERE Applications.ApplicationDate < CURRENT_DATE";
+            
+            String[] headers2 = {"ApplicationID", "ApplicantID", "ApplicationDate", "JobID", "Name", "Email", "PhoneNumber"};
+            String[] columns2 = {"ApplicationID", "ApplicantID", "ApplicationDate", "JobID", "Name", "Email", "PhoneNumber"};
+            
+            conf.viewRecords(query2, headers2, columns2);
+        } else if (choice.equals("D")) {
+            String query5 = "SELECT Applicants.ApplicantID, Applicants.Name, JobListings.JobTitle, JobListings.Department " +
+                            "FROM Applicants " +
+                            "LEFT JOIN Applications ON Applicants.ApplicantID = Applications.ApplicantID " +
+                            "LEFT JOIN JobListings ON Applications.JobID = JobListings.JobID";
+
+            String[] headers5 = {"ApplicantID", "Name", "JobTitle", "Department"};
+            String[] columns5 = {"ApplicantID", "Name", "JobTitle", "Department"};
+
+            conf.viewRecords(query5, headers5, columns5);
+
+            System.out.print("Enter ApplicantID to view their report: ");
+            int applicantId = sc.nextInt();
+
+            String query4 = "SELECT Applicants.ApplicantID, Applicants.Name, Applicants.Email, Applicants.PhoneNumber, Applications.JobID, Applications.ApplicationDate, Applications.Status FROM Applicants LEFT JOIN Applications ON Applicants.ApplicantID = Applications.ApplicantID WHERE Applicants.ApplicantID = ?";
+            String[] headers4 = {"ApplicantID", "Name", "Email", "PhoneNumber", "JobID", "ApplicationDate", "Status"};
+            String[] columns4 = {"ApplicantID", "Name", "Email", "PhoneNumber", "JobID", "ApplicationDate", "Status"};
+            conf.viewRecordsWithParam(query4, headers4, columns4, applicantId);
+        } else if (choice.equals("E")) {
+            System.out.println("|--------------------Approved--------------------|");
+            String query3 = "SELECT Applications.ApplicationID, Applications.ApplicantID, Applications.ApplicationDate, " +
+                            "Applications.Status, Applicants.PhoneNumber, JobListings.JobTitle, Applicants.Name " +
+                            "FROM Applications " +
+                            "LEFT JOIN JobListings ON Applications.JobID = JobListings.JobID " +
+                            "LEFT JOIN Applicants ON Applications.ApplicantID = Applicants.ApplicantID " +
+                            "WHERE Applications.Status = 'Approved'";
+            String[] headers3 = {"ApplicationID", "Name", "ApplicationDate", "Status", "PhoneNumber", "JobTitle", "ApplicantID"};
+            String[] columns3 = {"ApplicationID", "Name", "ApplicationDate", "Status", "PhoneNumber", "JobTitle", "ApplicantID"};
+
+            conf.viewRecords(query3, headers3, columns3);
+
+            System.out.println("|--------------------Pending--------------------|");
+            String query6 = "SELECT Applications.ApplicationID, Applications.ApplicantID, Applications.ApplicationDate, " +
+                            "Applications.Status, Applicants.PhoneNumber, JobListings.JobTitle, Applicants.Name " +
+                            "FROM Applications " +
+                            "LEFT JOIN JobListings ON Applications.JobID = JobListings.JobID " +
+                            "LEFT JOIN Applicants ON Applications.ApplicantID = Applicants.ApplicantID " +
+                            "WHERE Applications.Status = 'Pending'";
+
+            String[] headers6 = {"ApplicationID", "Name", "ApplicationDate", "Status", "PhoneNumber", "JobTitle", "ApplicantID"};
+            String[] columns6 = {"ApplicationID", "Name", "ApplicationDate", "Status", "PhoneNumber", "JobTitle", "ApplicantID"};
+
+            conf.viewRecords(query6, headers6, columns6);
+
+            System.out.println("|--------------------Declined--------------------|");
+            String query7 = "SELECT Applications.ApplicationID, Applications.ApplicantID, Applications.ApplicationDate, " +
+                            "Applications.Status, Applicants.PhoneNumber, JobListings.JobTitle, Applicants.Name " +
+                            "FROM Applications " +
+                            "LEFT JOIN JobListings ON Applications.JobID = JobListings.JobID " +
+                            "LEFT JOIN Applicants ON Applications.ApplicantID = Applicants.ApplicantID " +
+                            "WHERE Applications.Status = 'Declined'";
+
+            String[] headers7 = {"ApplicationID", "Name", "ApplicationDate", "Status", "PhoneNumber", "JobTitle", "ApplicantID"};
+            String[] columns7 = {"ApplicationID", "Name", "ApplicationDate", "Status", "PhoneNumber", "JobTitle", "ApplicantID"};
+
+            conf.viewRecords(query7, headers7, columns7);
+        } else if (choice.equals("F")) {
+            System.out.println("Exiting program. Goodbye!");
+        } else {
+            System.out.println("Invalid choice. Please try again.");
         }
-
-    } else if (choice == 'C') {
-        String query2 = "SELECT Applications.ApplicationID, Applications.ApplicantID, Applications.ApplicationDate, " +
-                        "JobListings.JobID, Applicants.Name, Applicants.Email, Applicants.PhoneNumber " +
-                        "FROM Applications " +
-                        "LEFT JOIN JobListings ON Applications.JobID = JobListings.JobID " +
-                        "LEFT JOIN Applicants ON Applications.ApplicantID = Applicants.ApplicantID " +
-                        "WHERE Applications.ApplicationDate < CURRENT_DATE";
-        
-        String[] headers2 = {"ApplicationID", "ApplicantID", "ApplicationDate", "JobID", "Name", "Email", "PhoneNumber"};
-        String[] columns2 = {"ApplicationID", "ApplicantID", "ApplicationDate", "JobID", "Name", "Email", "PhoneNumber"};
-        
-        conf.viewRecords(query2, headers2, columns2);
-
-    } else if (choice == 'D') {
-        String query5 = "SELECT Applicants.ApplicantID, Applicants.Name, JobListings.JobTitle, JobListings.Department " +
-                        "FROM Applicants " +
-                        "LEFT JOIN Applications ON Applicants.ApplicantID = Applications.ApplicantID " +
-                        "LEFT JOIN JobListings ON Applications.JobID = JobListings.JobID";
-
-        String[] headers5 = {"ApplicantID", "Name", "JobTitle", "Department"};
-        String[] columns5 = {"ApplicantID", "Name", "JobTitle", "Department"};
-
-        conf.viewRecords(query5, headers5, columns5);
-
-        System.out.print("Enter ApplicantID to view their report: ");
-        int applicantId = sc.nextInt();
-
-        String query4 = "SELECT Applicants.ApplicantID, Applicants.Name, Applicants.Email, Applicants.Phonenumber, Applications.JobID, Applications.ApplicationDate, Applications.Status FROM Applicants LEFT JOIN Applications ON Applicants.ApplicantID = Applications.ApplicantID WHERE Applicants.ApplicantID = ?";
-        String[] headers4 = {"ApplicantID", "Name", "Email", "Phonenumber", "JobID", "ApplicationDate", "Status"};
-        String[] columns4 = {"ApplicantID", "Name", "Email", "Phonenumber", "JobID", "ApplicationDate", "Status"};
-        conf.viewRecordsWithParam(query4, headers4, columns4, applicantId);
-
-    } else if (choice == 'E') {
-        System.out.println("|--------------------Approved--------------------|");
-String query3 = "SELECT Applications.ApplicationID, Applications.ApplicantID, Applications.ApplicationDate, " +
-                "Applications.Status, Applicants.PhoneNumber, JobListings.JobTitle, Applicants.Name " +
-                "FROM Applications " +
-                "LEFT JOIN JobListings ON Applications.JobID = JobListings.JobID " +
-                "LEFT JOIN Applicants ON Applications.ApplicantID = Applicants.ApplicantID " +
-                "WHERE Applications.Status = 'Approved'";
-String[] headers3 = {"ApplicationID", "Name", "ApplicationDate", "Status", "PhoneNumber", "JobTitle", "ApplicantID"};
-String[] columns3 = {"ApplicationID", "Name", "ApplicationDate", "Status", "PhoneNumber", "JobTitle", "ApplicantID"};
-
-conf.viewRecords(query3, headers3, columns3);
-
-System.out.println("|--------------------Pending--------------------|");
-String query6 = "SELECT Applications.ApplicationID, Applications.ApplicantID, Applications.ApplicationDate, " +
-                "Applications.Status, Applicants.PhoneNumber, JobListings.JobTitle, Applicants.Name " +
-                "FROM Applications " +
-                "LEFT JOIN JobListings ON Applications.JobID = JobListings.JobID " +
-                "LEFT JOIN Applicants ON Applications.ApplicantID = Applicants.ApplicantID " +
-                "WHERE Applications.Status = 'Pending'";
-
-String[] headers6 = {"ApplicationID", "Name", "ApplicationDate", "Status", "PhoneNumber", "JobTitle", "ApplicantID"};
-String[] columns6 = {"ApplicationID", "Name", "ApplicationDate", "Status", "PhoneNumber", "JobTitle", "ApplicantID"};
-
-conf.viewRecords(query6, headers6, columns6);
-
-System.out.println("|--------------------Declined--------------------|");
-String query7 = "SELECT Applications.ApplicationID, Applications.ApplicantID, Applications.ApplicationDate, " +
-                "Applications.Status, Applicants.PhoneNumber, JobListings.JobTitle, Applicants.Name " +
-                "FROM Applications " +
-                "LEFT JOIN JobListings ON Applications.JobID = JobListings.JobID " +
-                "LEFT JOIN Applicants ON Applications.ApplicantID = Applicants.ApplicantID " +
-                "WHERE Applications.Status = 'Declined'";
-
-String[] headers7 = {"ApplicationID", "Name", "ApplicationDate", "Status", "PhoneNumber", "JobTitle", "ApplicantID"};
-String[] columns7 = {"ApplicationID", "Name", "ApplicationDate", "Status", "PhoneNumber", "JobTitle", "ApplicantID"};
-
-conf.viewRecords(query7, headers7, columns7);
-
-    
-    } else if (choice == 'F') {
-        System.out.println("Exiting program. Goodbye!");
-    } else {
-        System.out.println("Invalid choice. Please try again.");
-    }
+    } while (!choice.equals("F")); // Loop until the user chooses to exit
 }
+
 
 
 
