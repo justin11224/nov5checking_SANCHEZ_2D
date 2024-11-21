@@ -100,10 +100,8 @@ System.out.println("|--------------------|Thank you, see you!");
     System.out.println("B. View applications applying for one Job ID");
     System.out.println("C. View applications with past ApplicationDate");
     System.out.println("D. View applicant report by ApplicantID");
-    System.out.println("E. View all approved applications");
-    System.out.println("F. View all pending applications");
-    System.out.println("G. View all declined applications");
-    System.out.println("H. Exit");
+    System.out.println("E. View all approved-pending-declined applications");
+    System.out.println("F. Exit");
     System.out.print("Enter your choice: ");
 
     char choice = sc.next().toUpperCase().charAt(0);
@@ -172,45 +170,46 @@ System.out.println("|--------------------|Thank you, see you!");
         conf.viewRecordsWithParam(query4, headers4, columns4, applicantId);
 
     } else if (choice == 'E') {
-        String query3 = "SELECT Applications.ApplicationID, Applications.ApplicantID, Applications.ApplicationDate, " +
-                        "Applications.Status, JobListings.JobID, JobListings.JobTitle, Applicants.Name " +
-                        "FROM Applications " +
-                        "LEFT JOIN JobListings ON Applications.JobID = JobListings.JobID " +
-                        "LEFT JOIN Applicants ON Applications.ApplicantID = Applicants.ApplicantID " +
-                        "WHERE Applications.Status = 'Approved'";
-        String[] headers3 = {"ApplicationID", "Name", "ApplicationDate", "Status", "JobID", "JobTitle", "ApplicantID"};
-        String[] columns3 = {"ApplicationID", "Name", "ApplicationDate", "Status", "JobID", "JobTitle", "ApplicantID"};
-        
-        
-        conf.viewRecords(query3, headers3, columns3);
+        System.out.println("|--------------------Approved--------------------|");
+String query3 = "SELECT Applications.ApplicationID, Applications.ApplicantID, Applications.ApplicationDate, " +
+                "Applications.Status, Applicants.PhoneNumber, JobListings.JobTitle, Applicants.Name " +
+                "FROM Applications " +
+                "LEFT JOIN JobListings ON Applications.JobID = JobListings.JobID " +
+                "LEFT JOIN Applicants ON Applications.ApplicantID = Applicants.ApplicantID " +
+                "WHERE Applications.Status = 'Approved'";
+String[] headers3 = {"ApplicationID", "Name", "ApplicationDate", "Status", "PhoneNumber", "JobTitle", "ApplicantID"};
+String[] columns3 = {"ApplicationID", "Name", "ApplicationDate", "Status", "PhoneNumber", "JobTitle", "ApplicantID"};
 
+conf.viewRecords(query3, headers3, columns3);
+
+System.out.println("|--------------------Pending--------------------|");
+String query6 = "SELECT Applications.ApplicationID, Applications.ApplicantID, Applications.ApplicationDate, " +
+                "Applications.Status, Applicants.PhoneNumber, JobListings.JobTitle, Applicants.Name " +
+                "FROM Applications " +
+                "LEFT JOIN JobListings ON Applications.JobID = JobListings.JobID " +
+                "LEFT JOIN Applicants ON Applications.ApplicantID = Applicants.ApplicantID " +
+                "WHERE Applications.Status = 'Pending'";
+
+String[] headers6 = {"ApplicationID", "Name", "ApplicationDate", "Status", "PhoneNumber", "JobTitle", "ApplicantID"};
+String[] columns6 = {"ApplicationID", "Name", "ApplicationDate", "Status", "PhoneNumber", "JobTitle", "ApplicantID"};
+
+conf.viewRecords(query6, headers6, columns6);
+
+System.out.println("|--------------------Declined--------------------|");
+String query7 = "SELECT Applications.ApplicationID, Applications.ApplicantID, Applications.ApplicationDate, " +
+                "Applications.Status, Applicants.PhoneNumber, JobListings.JobTitle, Applicants.Name " +
+                "FROM Applications " +
+                "LEFT JOIN JobListings ON Applications.JobID = JobListings.JobID " +
+                "LEFT JOIN Applicants ON Applications.ApplicantID = Applicants.ApplicantID " +
+                "WHERE Applications.Status = 'Declined'";
+
+String[] headers7 = {"ApplicationID", "Name", "ApplicationDate", "Status", "PhoneNumber", "JobTitle", "ApplicantID"};
+String[] columns7 = {"ApplicationID", "Name", "ApplicationDate", "Status", "PhoneNumber", "JobTitle", "ApplicantID"};
+
+conf.viewRecords(query7, headers7, columns7);
+
+    
     } else if (choice == 'F') {
-        String query6 = "SELECT Applications.ApplicationID, Applications.ApplicantID, Applications.ApplicationDate, " +
-                        "Applications.Status, JobListings.JobID, JobListings.JobTitle, Applicants.Name " +
-                        "FROM Applications " +
-                        "LEFT JOIN JobListings ON Applications.JobID = JobListings.JobID " +
-                        "LEFT JOIN Applicants ON Applications.ApplicantID = Applicants.ApplicantID " +
-                        "WHERE Applications.Status = 'Pending'";
-        
-        String[] headers6 = {"ApplicationID", "Name", "ApplicationDate", "Status", "JobID", "JobTitle", "ApplicantID"};
-        String[] columns6 = {"ApplicationID", "Name", "ApplicationDate", "Status", "JobID", "JobTitle", "ApplicantID"};
-        
-        conf.viewRecords(query6, headers6, columns6);
-
-    } else if (choice == 'G') {
-        String query7 = "SELECT Applications.ApplicationID, Applications.ApplicantID, Applications.ApplicationDate, " +
-                        "Applications.Status, JobListings.JobID, JobListings.JobTitle, Applicants.Name " +
-                        "FROM Applications " +
-                        "LEFT JOIN JobListings ON Applications.JobID = JobListings.JobID " +
-                        "LEFT JOIN Applicants ON Applications.ApplicantID = Applicants.ApplicantID " +
-                        "WHERE Applications.Status = 'Declined'";
-        
-        String[] headers7 = {"ApplicationID", "Name", "ApplicationDate", "Status", "JobID", "JobTitle", "ApplicantID"};
-        String[] columns7 = {"ApplicationID", "Name", "ApplicationDate", "Status", "JobID", "JobTitle", "ApplicantID"};
-        
-        conf.viewRecords(query7, headers7, columns7);
-
-    } else if (choice == 'H') {
         System.out.println("Exiting program. Goodbye!");
     } else {
         System.out.println("Invalid choice. Please try again.");
